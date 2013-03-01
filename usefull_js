@@ -1,0 +1,155 @@
+var GIVA = {
+    apis: {
+        is_html5: function () {
+            var a = "rc" && "loop" && "muted" && "autoplay" && "controls" in document.createElement("audio");
+            var b = "width" && "height" && "getContext" in document.createElement("canvas");
+            return a && b;
+        },
+        _nav: (function () {
+            var nb = navigator.userAgent.toLowerCase();
+            var webkit = nb.indexOf("webkit") != -1;
+            var opera = nb.indexOf("opera") != -1;
+            var ie = nb.indexOf("msie") != -1;
+            var firefox = nb.indexOf("firefox") != -1;
+            return { webkit: webkit, opera: opera, ie: ie, firefox: firefox };
+        })(),
+        SupportVA_Foramats: (function () {
+            function _f(tag, type) {
+                return tag.canPlayType(type) == "maybe";
+            }
+            var v_tag = document.createElement("video");
+            return {
+                "mp3": _f(v_tag, "audio/mp3"),
+                "mp4": _f(v_tag, "video/mp4"),
+                "wav": _f(v_tag, "audio/wav")
+            }
+        })(),
+        is_mobile: (function () {
+            return screen.colorDepth <= 16;
+        })(),
+        is_windows: function () {
+            return navigator.platform.toLowerCase().indexOf("win") != -1;
+        },
+        is_mac: function () {
+            return navigator.platform.toLowerCase().indexOf("mac") != -1;
+        },
+        redirect: function (url) {
+            setTimeout(function () {
+                location.href = url;
+            }, 3000);
+            return false;
+        },
+        is_linux: function () {
+            return navigator.platform.toLowerCase().indexOf("linux") != -1;
+        },
+        Element: {
+            $get: function (element, method) {
+                method = method.toLowerCase();
+                if (document.querySelector) {
+                    if (method == "id")
+                        return document.querySelector("#" + element);
+                    else if (method == "tag")
+                        return document.querySelectorAll(element);
+                    else if (method == "class")
+                        return document.querySelectorAll("." + element);
+                } else {
+                    if (method == "id")
+                        return document.getElementById(element);
+                    else if (method == "tag")
+                        return document.getElementsByTagName(element);
+                    else if (method == "class")
+                        return document.getElementsByClassName(element);
+                }
+            },
+            $write: function (text) {
+                document.write(text.toLowerCase);
+            },
+            $_add: function (Element, childs) {
+                for (var go = 0; go < childs.length; ++go)
+                    Element.appendChild(childs[go]);
+            },
+            $_remove: function (Element, childs) {
+                for (var go = 0; go < childs.length; ++go)
+                    Element.removeChild(childs[go]);
+            },
+            $info: function (element) {
+                return { "tag": element.tagName.toLowerCase(), "childs": element.children, "innerHTML": element.innerHTML, innerText: element.innerText };
+            },
+            $_style: function (element, style) {
+                var _EFS = this;
+                for (key in element)
+                    element.style[key] = element[key];
+            },
+            _OVER: function (element, callback) {
+                var _el = element;
+                if (element.addEventListener)
+                    element.addEventListener("mouseover", callback);
+                else if (element.attachEvent)
+                    element.attachEvent("onmouseover", callback);
+            },
+            _OUT: function (element, callback) {
+                var _el = element;
+                if (element.addEventListener)
+                    element.addEventListener("mouseout", callback);
+                else if (element.attachEvent)
+                    element.attachEvent("onmouseout", callback);
+            },
+            _CLICK: function (element, callback) {
+                var _el = element;
+                if (element.addEventListener)
+                    element.addEventListener("click", callback);
+                else if (element.attachEvent)
+                    element.attachEvent("onclick", callback);
+            },
+            getWidth: function (element) {
+                function w(element) { return element.offsetWidth || element.clientWidth || 0; }
+                return (w(element));
+            },
+            getHeight: function (element) {
+                function h(element) { return element.offsetHeight || element.clientHeight || 0; }
+                return (h(element));
+            },
+            getType: function (element) {
+                if (element.tagName == "INPUT" && (element.hasAttribute("type") || !!(element.getAttribute("type"))))
+                    return element['type'] || element.getAttribute("type");
+            },
+            $add_Class: function (Element, name) {
+                function get_class(element) { return element.className || element.getAttribute("class"); }
+                function set_class(element, name) { element.setAttribute("class", name); }
+                var class2 = get_class(Element).split(" ");
+                for (var go = 0; go < class2.length; ++go) {
+                    if (class2[go] == name)
+                        class2[go] = '';
+                    class2.push(name);
+                }
+                set_class(Element, class2);
+
+            }
+        },
+        mobile: (function () {
+            var _ua = navigator.userAgent.toLowerCase();
+            is_index = function (str, find) {
+                return str.indexOf(find) != -1;
+            }
+            return { android: is_index(_ua, "android"), ios: is_index(_ua, "ios"), webos: is_index(_ua, "webos"), java: is_index(_ua, "java") };
+        })(),
+        screen: (function () {
+            return { "width": screen.availWidth, "height": screen.availHeight };
+        })(),
+        is_secret: function () {
+            return 'https:' == location.protocol;
+        },
+        is_rtl: function () {
+            return document.body.hasAttribute("dir") || (document.body.style.direction == 'rtl');
+        },
+        XHR: function () {
+            try {
+                return new XMLHttpRequest();
+            } catch (e) {
+                try {
+                    return new ActiveXObject("Microsoft.XMLHttp");
+                } catch (e2) { }
+            }
+        }
+    }
+};
